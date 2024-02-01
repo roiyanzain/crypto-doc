@@ -5,49 +5,47 @@ from Crypto.Hash import SHA256
 from Crypto.Util.Padding import unpad
 
 def decrypt_file(uploaded_file, password):
-    # Create a key from the password
+    
+    # Buat key dari password
     key = SHA256.new(password.encode('utf-8')).digest()
 
-    # Read the encrypted data from the uploaded file
+    # Baca data enkripsi dari file yang diupload
     encrypted_data = uploaded_file.read()
 
-    # The first 16 bytes of the encrypted data is the IV
+    # 16 byte pertama merupakan IV
     iv = encrypted_data[:16]
     ciphertext = encrypted_data[16:]
 
-    # Initialize AES cipher with the key and IV
+    # Inisialisasi AES Chiper dengan key dan IV
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
 
-    # Decrypt the ciphertext
+    # Dekripsi chipertext
     plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
 
     return plaintext
 
 def decryptPage():
-    # Ask the user for the decryption password
+    # Inputkan password dari file yang didekripsi
     password = st.text_input("Enter decryption password:", type="password")
 
-    # Create a key from the password
-    key = SHA256.new(password.encode('utf-8')).digest()
-
-    # Ask the user to upload the encrypted .docx file
-    uploaded_file = st.file_uploader("Choose an encrypted .docx file", type=["txt", "xls", "csv", "docx"])
+    # Upload file user
+    uploaded_file = st.file_uploader("Choose a file", type=["txt", "xls", "csv", "docx"])
 
     if uploaded_file is not None:
-        # Get the file extension
+        # Dapatkan ekstensi file yang diupload
         file_extension = os.path.splitext(uploaded_file.name)[1]
 
-        # Decrypt the file content
+        # Dekripsi konten dari file
         plaintext = decrypt_file(uploaded_file, password)
 
-        # Write the decrypted content to a new file
+        # Tulis file yang telah didekripsi ke dalam file baru
         decrypted_file_name = 'decrypted_document' + file_extension
         with open(decrypted_file_name, 'wb') as f:
             f.write(plaintext)
 
         st.success("File decrypted successfully!")
 
-        # Add a download button
+        # Tambahkan tombol unduhan
         st.download_button(
             label="Download decrypted file",
             data=plaintext,

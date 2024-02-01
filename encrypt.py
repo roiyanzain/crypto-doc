@@ -6,39 +6,40 @@ from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad
 
 def encryptPage():
-    # Ask the user for a password
-    password = st.text_input("Enter encryption password:", type="password")
+    
+    # Input password untuk user
+    password = st.text_input("Enter encryption password", type="password")
 
-    # Create a key from the password
+    # Membuat key dari password yang telah diinputkan user
     key = SHA256.new(password.encode('utf-8')).digest()
 
-    # Ask the user to upload a .docx file
+    # Upload file user
     uploaded_file = st.file_uploader("Choose a file", type=["txt", "docx", "xls", "csv"])
     if uploaded_file is not None:
 
-        # Get the file extension
+        # Dapatkan ekstensi filenya
         file_extension = os.path.splitext(uploaded_file.name)[1]
 
-        # Read the file content
+        # Baca content atau isi filenya
         plaintext = uploaded_file.read()
 
-        # Initialize AES cipher with the key
+        # Inisialisasi AES Chiper dengan Key
         cipher = AES.new(key, AES.MODE_CBC)
 
-        # Encrypt the file content
+        # Enkripsi isi dari file yang diupload
         ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
 
-        # Combine the IV and the ciphertext
+        # Kombinasikan IV dengan Chipertext
         encrypted_data = cipher.iv + ciphertext
 
-        # Write the encrypted content to a new file
+        # Tulis file yang telah dienkripsi ke file baru
         encrypted_file_name = 'encrypted_document' + file_extension
         with open(encrypted_file_name, 'wb') as f:
             f.write(encrypted_data)
 
         st.success("File encrypted successfully!")
 
-        # Add a download button
+        # Tambahkan tombol unduhan
         st.download_button(
             label="Download encrypted file",
             data=encrypted_data,

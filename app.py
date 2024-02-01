@@ -2,7 +2,12 @@ import streamlit as st
 from encrypt import encryptPage
 from decrypt import decryptPage
 
-st.set_page_config(page_title="Crypto Encryption", page_icon=":lock:", layout="wide")
+st.set_page_config(
+    page_title="Crypto Encryption", 
+    page_icon=":lock:", 
+    layout="wide",
+)
+
 
 # Set up the Streamlit app
 st.title('Doc Encryption')
